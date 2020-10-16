@@ -458,7 +458,7 @@ T FloatingBaseModel<T>::totalNonRotorMass() {
 }
 
 /*!
- * Compute the total mass of bodies which are not rotors
+ * Compute the total mass of bodies
  * @return
  */
 template <typename T>
