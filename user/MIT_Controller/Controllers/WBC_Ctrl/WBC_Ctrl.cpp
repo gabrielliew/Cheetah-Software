@@ -169,17 +169,17 @@ void WBC_Ctrl<T>::_UpdateModel(const StateEstimate<T> & state_est,
   _model.generalizedCoriolisForce();
 
   _A = _model.getMassMatrix();
-  std::cout<<"\n\nQuat\n"<<_state.bodyOrientation;
-  std::cout<<"\n\nA\n"<<_A;
-  std::cout<<"\n\nFL\n"<<_state.q[3]<<" "<<_state.q[4]<<" "<<_state.q[5];
-  std::cout<<"\n\nJ_FL\n"<<_model._Jc[11];
-  std::cout<<"\n\nFR\n"<<_state.q[0]<<" "<<_state.q[1]<<" "<<_state.q[2];
-  std::cout<<"\n\nJ_FR\n"<<_model._Jc[9];
-  std::cout<<"\n\nHL\n"<<_state.q[9]<<" "<<_state.q[10]<<" "<<_state.q[11];
-  std::cout<<"\n\nJ_HL\n"<<_model._Jc[15];
-  std::cout<<"\n\nHR\n"<<_state.q[6]<<" "<<_state.q[7]<<" "<<_state.q[8];
-  std::cout<<"\n\nJ_HR\n"<<_model._Jc[13];
-  std::cout<<"\n*************\n"<<std::endl;
+  // std::cout<<"\n\nQuat\n"<<_state.bodyOrientation;
+  // std::cout<<"\n\nA\n"<<_A;
+  // std::cout<<"\n\nFL\n"<<_state.q[3]<<" "<<_state.q[4]<<" "<<_state.q[5];
+  // std::cout<<"\n\nJ_FL\n"<<_model._Jc[11];
+  // std::cout<<"\n\nFR\n"<<_state.q[0]<<" "<<_state.q[1]<<" "<<_state.q[2];
+  // std::cout<<"\n\nJ_FR\n"<<_model._Jc[9];
+  // std::cout<<"\n\nHL\n"<<_state.q[9]<<" "<<_state.q[10]<<" "<<_state.q[11];
+  // std::cout<<"\n\nJ_HL\n"<<_model._Jc[15];
+  // std::cout<<"\n\nHR\n"<<_state.q[6]<<" "<<_state.q[7]<<" "<<_state.q[8];
+  // std::cout<<"\n\nJ_HR\n"<<_model._Jc[13];
+  // std::cout<<"\n*************\n"<<std::endl;
   _grav = _model.getGravityForce();
   _coriolis = _model.getCoriolisForce();
   _Ainv = _A.inverse();

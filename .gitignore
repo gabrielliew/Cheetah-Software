@@ -28,3 +28,17 @@ documentation/doxygen/html
 documentation/doxygen/latex
 .DS_Store
 tags
+cheetah_software.srctrlbm
+cheetah_software.srctrldb
+cheetah_software.srctrlprj
+Cheetah.srctrlbm
+Cheetah.srctrldb
+Cheetah.srctrlprj
+CMakeLists.txt
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/settings.json
+.vscode/tasks.json
+config/mini-cheetah-defaults.yaml
+config/mini-cheetah-defaults.yaml
+config/mini-cheetah-defaults.yaml
