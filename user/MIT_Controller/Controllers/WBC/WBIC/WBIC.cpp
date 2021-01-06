@@ -83,93 +83,10 @@ void WBIC<T>::MakeTorque(DVec<T> &cmd, void *extra_input)
   // Set equality constraints
   _SetEqualityConstraint(qddot_pre);
 
-  // printf("dyn_CI:\n");
-  // for (size_t i = 0; i < _dim_Uf; i++)
-  // {
-  //   std::cout << '[';
-  //   for (size_t j = 0; j < _dim_opt; j++)
-  //   {
-  //     std::cout << _dyn_CI(i,j);
-  //     if (j != _dim_opt - 1)
-  //       std::cout << ',';
-  //   }
-  //   std::cout << ']';
-  //   if (i != _dim_Uf - 1)
-  //     std::cout << ',';
-  //   std::cout << endl;
-  // }
-  // std::cout << std::endl;
-  // printf("ci0:\n");
-  // for (size_t i = 0; i < _dim_Uf; i++)
-  // {
-  //   std::cout << _dyn_ci0[i];
-  //   if (i != _dim_Uf - 1)
-  //     std::cout << ", ";
-  // }
-  // std::cout << std::endl;
-  // printf("dyn_CE:\n");
-  // for (size_t i = 0; i < _dim_eq_cstr; i++)
-  // {
-  //   std::cout << '[';
-  //   for (size_t j = 0; j < _dim_opt; j++)
-  //   {
-  //     std::cout << _dyn_CE(i,j);
-  //     if (j != _dim_opt - 1)
-  //       std::cout << ',';
-  //   }
-  //   std::cout << ']';
-  //   if (i != _dim_eq_cstr - 1)
-  //     std::cout << ',';
-  //   std::cout << endl;
-  // }
-  // std::cout << std::endl;
-  // printf("ce0:\n");
-  // for (size_t i = 0; i < _dim_eq_cstr; i++)
-  // {
-  //   std::cout << _dyn_ce0[i];
-  //   if (i != _dim_eq_cstr - 1)
-  //     std::cout << ", ";
-  // }
-  // std::cout << std::endl;
-  // printf("G:\n");
-  // for (size_t i = 0; i < _dim_opt; i++)
-  // {
-  //   std::cout << '[';
-  //   for (size_t j = 0; j < _dim_opt; j++)
-  //   {
-  //     std::cout << G[i][j];
-  //     if (j != _dim_opt - 1)
-  //       std::cout << ',';
-  //   }
-  //   std::cout << ']';
-  //   if (i != _dim_opt - 1)
-  //     std::cout << ',';
-  //   std::cout << endl;
-  // }
-  // std::cout << std::endl;
-  // printf("g0:\n");
-  // for (size_t i = 0; i < _dim_opt; i++)
-  // {
-  //   std::cout << g0[i];
-  //   if (i != _dim_opt - 1)
-  //     std::cout << ", ";
-  // }
-  // std::cout << std::endl;
-
   // Optimization
   // Timer timer;
   T f = solve_quadprog(G, g0, CE, ce0, CI, ci0, z);
-  // std::cout << "z\n";
-  // for (size_t i = 0; i < _dim_opt; i++)
-  // {
-  //   std::cout << z[i];
-  //   if (i != _dim_opt - 1)
-  //     std::cout
-  //         << ", ";
-  // }
-
-  // std::cout << std::endl;
-  // std::cout << "*****************************************\n";
+  
   // std::cout<<"\n wbic old time: "<<timer.getMs()<<std::endl;
   (void)f;
 
