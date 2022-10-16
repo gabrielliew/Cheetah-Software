@@ -14,7 +14,7 @@ file(GLOB_RECURSE sources "src/*.cpp")                   # common library cpp fi
 
 # Library
 add_library(biomimetics SHARED ${sources})       # produce a library used by sim/robot
-target_link_libraries(biomimetics inih dynacore_param_handler JCQP osqp)
+target_link_libraries(biomimetics inih dynacore_param_handler JCQP osqp Eigen3::Eigen)
 
 if(CMAKE_SYSTEM_NAME MATCHES Linux)
 # Pull in Google Test
@@ -27,7 +27,7 @@ endif()
 include(DownloadProject.cmake)
 download_project(PROJ                googletest
                  GIT_REPOSITORY      https://github.com/google/googletest.git
-                 GIT_TAG             master
+                 GIT_TAG             main
                  ${UPDATE_DISCONNECTED_IF_AVAILABLE}
                  QUIET
 )
