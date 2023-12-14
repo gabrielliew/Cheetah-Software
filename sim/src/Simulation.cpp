@@ -19,6 +19,10 @@ Simulation::Simulation(RobotType robot, Graphics3D* window,
                        SimulatorControlParameters& params, ControlParameters& userParams, std::function<void(void)> uiUpdate)
     : _simParams(params), _userParams(userParams), _tau(12) {
   _uiUpdate = uiUpdate;
+    now = std::chrono::high_resolution_clock::now();
+    auto UTC = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+    myfile.open ("simulator"+std::to_string(UTC) + ".csv");
+    myfile << "time,iterations,bodyOrientation0,bodyOrientation0,bodyOrientation0,bodyOrientation0,vb0,rpy0,omegab0,omega0,p0,v0,vb1,rpy1,omegab1,omega1,p1,v1,vb2,rpy2,omegab2,omega2,p2,v2,q00,qd00,qdd00,t00,q01,qd01,qdd01,t01,q02,qd02,qdd02,t02,q10,qd10,qdd10,t10,q11,qd11,qdd11,t11,q12,qd12,qdd12,t12,q20,qd20,qdd20,t20,q21,qd21,qdd21,t21,q22,qd22,qdd22,t22,q30,qd30,qdd30,t30,q31,qd31,qdd31,t31,q32,qd32,qdd32,t32\n";
   // init parameters
   printf("[Simulation] Load parameters...\n");
   _simParams
@@ -487,7 +491,10 @@ void Simulation::highLevelControl() {
 
 void Simulation::buildLcmMessage() {
   _simLCM.time = _currentSimTime;
+  // std::cout<<_currentSimTime<<",";
+  myfile<<_currentSimTime;
   _simLCM.timesteps = _highLevelIterations;
+  myfile<<","<<_highLevelIterations;
   auto& state = _simulator->getState();
   auto& dstate = _simulator->getDState();
 
@@ -498,18 +505,25 @@ void Simulation::buildLcmMessage() {
 
   for (size_t i = 0; i < 4; i++) {
     _simLCM.quat[i] = state.bodyOrientation[i];
+    myfile<<","<<state.bodyOrientation[i];
   }
 
   for (size_t i = 0; i < 3; i++) {
     _simLCM.vb[i] = state.bodyVelocity[i + 3];  // linear velocity in body frame
+    myfile<<","<<_simLCM.vb[i];
     _simLCM.rpy[i] = rpy[i];
+    myfile<<","<<_simLCM.rpy[i];
     for (size_t j = 0; j < 3; j++) {
       _simLCM.R[i][j] = Rbody(i, j);
     }
     _simLCM.omegab[i] = state.bodyVelocity[i];
+    myfile<<","<<_simLCM.omegab[i];
     _simLCM.omega[i] = omega[i];
+    myfile<<","<<_simLCM.omega[i];
     _simLCM.p[i] = state.bodyPosition[i];
+    myfile<<","<<_simLCM.p[i];
     _simLCM.v[i] = v[i];
+    myfile<<","<<_simLCM.v[i];
     _simLCM.vbd[i] = dstate.dBodyVelocity[i + 3];
   }
 
@@ -522,8 +536,11 @@ void Simulation::buildLcmMessage() {
       size_t gcID = _simulator->getModel()._footIndicesGC.at(leg);
       _simLCM.p_foot[leg][joint] = _simulator->getModel()._pGC.at(gcID)[joint];
       _simLCM.f_foot[leg][joint] = _simulator->getContactForce(gcID)[joint];
+      myfile<<","<<state.q[leg * 3 + joint]<<","<<state.qd[leg * 3 + joint]<<","<<dstate.qdd[leg * 3 + joint]<<","<<_tau[leg * 3 + joint];
     }
   }
+  // std::cout<<state.q[2]<<std::endl;
+  myfile<<"\n";
 }
 
 /*!
@@ -700,6 +717,7 @@ void Simulation::loadTerrainFile(const std::string& terrainFileName,
       loadVec(gfxY, "graphicsSize", 1);
       loadVec(checkerX, "checkers", 0);
       loadVec(checkerY, "checkers", 1);
+      loadArray(ori, "orientation", 3);
       addCollisionPlane(mu, resti, height, gfxX, gfxY, checkerX, checkerY,
                         addGraphics);
     } else if (typeName == "box") {

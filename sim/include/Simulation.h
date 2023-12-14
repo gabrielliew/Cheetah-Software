@@ -24,7 +24,11 @@
 #include <queue>
 #include <utility>
 #include <vector>
-
+#include <iostream>
+#include <chrono>
+#include <iomanip> // put_time
+#include <fstream>
+#include <sstream> // stringstream
 #include <lcm/lcm-cpp.hpp>
 #include "simulator_lcmt.hpp"
 
@@ -120,7 +124,8 @@ class Simulation {
  private:
   void handleControlError();
   Graphics3D* _window = nullptr;
-
+  std::ofstream myfile;
+  std::chrono::time_point<std::chrono::high_resolution_clock> now;
   std::mutex _robotMutex;
   SharedMemoryObject<SimulatorSyncronizedMessage> _sharedMemory;
   ImuSimulator<double>* _imuSimulator = nullptr;
