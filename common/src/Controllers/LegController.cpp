@@ -10,6 +10,7 @@
 
 #include "Controllers/LegController.h"
 
+
 /*!
  * Zero the leg command so the leg will not output torque
  */
@@ -225,6 +226,8 @@ void LegController<T>::updateCommand(TiBoardCommand* tiBoardCommand) {
  */
 template<typename T>
 void LegController<T>::setLcm(leg_control_data_lcmt *lcmData, leg_control_command_lcmt *lcmCommand) {
+    // auto current_time = std::chrono::high_resolution_clock::now();
+    // myfile<< std::chrono::duration_cast<std::chrono::microseconds>(current_time - now).count() ;
     for(int leg = 0; leg < 4; leg++) {
         for(int axis = 0; axis < 3; axis++) {
             int idx = leg*3 + axis;
@@ -244,8 +247,10 @@ void LegController<T>::setLcm(leg_control_data_lcmt *lcmData, leg_control_comman
             lcmCommand->kd_cartesian[idx] = commands[leg].kdCartesian(axis, axis);
             lcmCommand->kp_joint[idx] = commands[leg].kpJoint(axis, axis);
             lcmCommand->kd_joint[idx] = commands[leg].kdJoint(axis, axis);
-        }
+            // myfile <<","<<datas[leg].q[axis] <<","<<datas[leg].qd[axis]<<datas[leg].q[axis] <<","<<datas[leg].tauEstimate[axis];
+        } 
     }
+  // myfile<<"\n";
 }
 
 template struct LegControllerCommand<double>;

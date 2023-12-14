@@ -17,6 +17,11 @@
 #include "Dynamics/Quadruped.h"
 #include "SimUtilities/SpineBoard.h"
 #include "SimUtilities/ti_boardcontrol.h"
+// #include <iostream>
+// #include <chrono>
+// #include <iomanip> // put_time
+// #include <fstream>
+// #include <sstream> // stringstream
 
 /*!
  * Data sent from the control algorithm to the legs.
@@ -58,6 +63,10 @@ class LegController {
  public:
   LegController(Quadruped<T>& quad) : _quadruped(quad) {
     for (auto& data : datas) data.setQuadruped(_quadruped);
+    // now = std::chrono::high_resolution_clock::now();
+    // auto UTC = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+    // myfile.open (std::to_string(UTC) + ".csv");
+    // myfile << "q00,qd00,t00,q01,qd01,t01,q02,qd02,t02,q10,qd10,t10,q11,qd11,t11,q12,qd12,t12,q20,qd20,t20,q21,qd21,t21,q22,qd22,t22,q30,qd30,t30,q31,qd31,t31,q32,qd32,t32\n";
   }
 
   void zeroCommand();
@@ -73,7 +82,8 @@ class LegController {
    * Set the maximum torque.  This only works on cheetah 3!
    */
   void setMaxTorqueCheetah3(T tau) { _maxTorque = tau; }
-
+  // std::ofstream myfile;
+  // std::chrono::time_point<std::chrono::high_resolution_clock> now;
   LegControllerCommand<T> commands[4];
   LegControllerData<T> datas[4];
   Quadruped<T>& _quadruped;
