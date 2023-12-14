@@ -75,7 +75,7 @@ void GameController::updateGamepadCommand(GamepadCommand &gamepadCommand) {
     gamepadCommand.leftTriggerAnalog = (float)_qGamepad->buttonL2();
     gamepadCommand.rightTriggerAnalog = (float)_qGamepad->buttonR2();
     gamepadCommand.leftStickAnalog =
-        Vec2<float>(0.0, -_qGamepad->axisLeftY());
+        Vec2<float>(_qGamepad->axisLeftX(), -_qGamepad->axisLeftY());
     gamepadCommand.rightStickAnalog =
         Vec2<float>(_qGamepad->axisRightX(), -_qGamepad->axisRightY());
   } else {
