@@ -717,7 +717,7 @@ void Simulation::loadTerrainFile(const std::string& terrainFileName,
       loadVec(gfxY, "graphicsSize", 1);
       loadVec(checkerX, "checkers", 0);
       loadVec(checkerY, "checkers", 1);
-      loadArray(ori, "orientation", 3);
+      // loadArray(ori, "orientation", 3);
       addCollisionPlane(mu, resti, height, gfxX, gfxY, checkerX, checkerY,
                         addGraphics);
     } else if (typeName == "box") {
