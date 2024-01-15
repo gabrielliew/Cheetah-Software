@@ -4,6 +4,7 @@
  */
 
 #include "Controllers/DesiredStateCommand.h"
+#include <cmath>
 /*=========================== Gait Data ===============================*/
 /**
  *
@@ -39,7 +40,7 @@ void DesiredStateCommand<T>::convertToStateCommands() {
     }else if(rcCommand->mode == RC_mode::LOCOMOTION ||
         rcCommand->mode == RC_mode::VISION){ // Walking
       joystickLeft[0] = rcCommand->v_des[1]; // Y
-      joystickLeft[1] = rcCommand->v_des[0]; // X
+      joystickLeft[1] = 2; // X
       joystickRight[0] = rcCommand->omega_des[2]; // Yaw
       joystickRight[1] = rcCommand->omega_des[1]; // Pitch
       //height_cmd = rcCommand->height_variation;
@@ -66,7 +67,7 @@ void DesiredStateCommand<T>::convertToStateCommands() {
 
   joystickLeft[0] *= -1.f;
   joystickRight[0] *= -1.f;
-
+  joystickLeft[1] = 1.f; // for auto move
   leftAnalogStick = leftAnalogStick * (T(1) - filter) + joystickLeft * filter;
   rightAnalogStick = rightAnalogStick * (T(1) - filter) + joystickRight * filter;
 
@@ -76,7 +77,7 @@ void DesiredStateCommand<T>::convertToStateCommands() {
   data.stateDes(8) = 0.0;  // vertical linear velocity
   data.stateDes(0) = dt * data.stateDes(6);  // X position
   data.stateDes(1) = dt * data.stateDes(7);  // Y position
-  data.stateDes(2) = 0.26;  // Z position height
+  data.stateDes(2) = 0.26+data.stateDes(1)* std::tan(0.1*3.14159/180);  // Z position height
   data.stateDes(9) = 0.0;  // Roll rate
   data.stateDes(10) = 0.0;  // Pitch rate
   data.stateDes(11) = deadband(rightAnalogStick[0], minTurnRate, maxTurnRate);  // Yaw turn rate
