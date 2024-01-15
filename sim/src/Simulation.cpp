@@ -3,9 +3,10 @@
 #include "ParamHandler.hpp"
 
 #include <Configuration.h>
+#include <fstream>
+
 #include <include/GameController.h>
 #include <unistd.h>
-#include <fstream>
 
 // if DISABLE_HIGH_LEVEL_CONTROL is defined, the simulator will run freely,
 // without trying to connect to a robot
@@ -15,18 +16,31 @@
  * Initialize the simulator here.  It is _not_ okay to block here waiting for
  * the robot to connect. Use firstRun() instead!
  */
-Simulation::Simulation(RobotType robot, Graphics3D* window,
-                       SimulatorControlParameters& params, ControlParameters& userParams, std::function<void(void)> uiUpdate)
+Simulation::Simulation(RobotType robot, Graphics3D *window,
+                       SimulatorControlParameters &params,
+                       ControlParameters &userParams,
+                       std::function<void(void)> uiUpdate)
     : _simParams(params), _userParams(userParams), _tau(12) {
   _uiUpdate = uiUpdate;
-    now = std::chrono::high_resolution_clock::now();
-    auto UTC = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
-    myfile.open ("simulator"+std::to_string(UTC) + ".csv");
-    myfile << "time,iterations,bodyOrientation0,bodyOrientation0,bodyOrientation0,bodyOrientation0,vb0,rpy0,omegab0,omega0,p0,v0,vb1,rpy1,omegab1,omega1,p1,v1,vb2,rpy2,omegab2,omega2,p2,v2,q00,qd00,qdd00,t00,q01,qd01,qdd01,t01,q02,qd02,qdd02,t02,q10,qd10,qdd10,t10,q11,qd11,qdd11,t11,q12,qd12,qdd12,t12,q20,qd20,qdd20,t20,q21,qd21,qdd21,t21,q22,qd22,qdd22,t22,q30,qd30,qdd30,t30,q31,qd31,qdd31,t31,q32,qd32,qdd32,t32\n";
+  now = std::chrono::high_resolution_clock::now();
+  auto UTC =
+      std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch())
+          .count();
+  std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+  std::string s(30, '\0');
+    std::strftime(&s[0], s.size(), "%Y-%m-%d-%H:%M:%S", std::localtime(&now));
+  myfile.open("simulator" + s + ".csv");
+  myfile << "time,iterations,bodyOrientation0,bodyOrientation0,"
+            "bodyOrientation0,bodyOrientation0,vb0,rpy0,omegab0,omega0,p0,v0,"
+            "vb1,rpy1,omegab1,omega1,p1,v1,vb2,rpy2,omegab2,omega2,p2,v2,q00,"
+            "qd00,qdd00,t00,q01,qd01,qdd01,t01,q02,qd02,qdd02,t02,q10,qd10,"
+            "qdd10,t10,q11,qd11,qdd11,t11,q12,qd12,qdd12,t12,q20,qd20,qdd20,"
+            "t20,q21,qd21,qdd21,t21,q22,qd22,qdd22,t22,q30,qd30,qdd30,t30,q31,"
+            "qd31,qdd31,t31,q32,qd32,qdd32,t32\n";
   // init parameters
   printf("[Simulation] Load parameters...\n");
   _simParams
-      .lockMutex();  // we want exclusive access to the simparams at this point
+      .lockMutex(); // we want exclusive access to the simparams at this point
   if (!_simParams.isFullyInitialized()) {
     printf(
         "[ERROR] Simulator parameters are not fully initialized.  You forgot: "
@@ -59,9 +73,10 @@ Simulation::Simulation(RobotType robot, Graphics3D* window,
     printf("[Simulation] Setup Cheetah graphics...\n");
     Vec4<float> truthColor, seColor;
     truthColor << 0.2, 0.4, 0.2, 0.6;
-    seColor << .75,.75,.75, 1.0;
-    _simRobotID = _robot == RobotType::MINI_CHEETAH ? window->setupMiniCheetah(truthColor, true, true)
-                                                    : window->setupCheetah3(truthColor, true, true);
+    seColor << .75, .75, .75, 1.0;
+    _simRobotID = _robot == RobotType::MINI_CHEETAH
+                      ? window->setupMiniCheetah(truthColor, true, true)
+                      : window->setupCheetah3(truthColor, true, true);
     _controllerRobotID = _robot == RobotType::MINI_CHEETAH
                              ? window->setupMiniCheetah(seColor, false, false)
                              : window->setupCheetah3(seColor, false, false);
@@ -135,7 +150,7 @@ Simulation::Simulation(RobotType robot, Graphics3D* window,
   // x0.q[11] = 1.715;
 
   // Cheetah lies on the ground
-  //x0.bodyPosition[2] = -0.45;
+  // x0.bodyPosition[2] = -0.45;
   x0.bodyPosition[2] = 0.05;
   x0.q[0] = -0.7;
   x0.q[1] = 1.;
@@ -152,7 +167,6 @@ Simulation::Simulation(RobotType robot, Graphics3D* window,
   x0.q[9] = 0.7;
   x0.q[10] = -1.0;
   x0.q[11] = -2.715;
-
 
   setRobotState(x0);
   _robotDataSimulator->setState(x0);
@@ -217,12 +231,13 @@ Simulation::Simulation(RobotType robot, Graphics3D* window,
   printf("[Simulation] Ready!\n");
 }
 
-void Simulation::sendControlParameter(const std::string& name,
+void Simulation::sendControlParameter(const std::string &name,
                                       ControlParameterValue value,
-                                      ControlParameterValueKind kind, bool isUser) {
-  ControlParameterRequest& request =
+                                      ControlParameterValueKind kind,
+                                      bool isUser) {
+  ControlParameterRequest &request =
       _sharedMemory().simToRobot.controlParameterRequest;
-  ControlParameterResponse& response =
+  ControlParameterResponse &response =
       _sharedMemory().robotToSim.controlParameterResponse;
 
   // first check no pending message
@@ -232,7 +247,9 @@ void Simulation::sendControlParameter(const std::string& name,
   request.requestNumber++;
 
   // message data
-  request.requestKind = isUser ? ControlParameterRequestKind::SET_USER_PARAM_BY_NAME : ControlParameterRequestKind::SET_ROBOT_PARAM_BY_NAME;
+  request.requestKind =
+      isUser ? ControlParameterRequestKind::SET_USER_PARAM_BY_NAME
+             : ControlParameterRequestKind::SET_ROBOT_PARAM_BY_NAME;
   strcpy(request.name, name.c_str());
   request.value = value;
   request.parameterKind = kind;
@@ -247,7 +264,8 @@ void Simulation::sendControlParameter(const std::string& name,
   if (_sharedMemory().waitForRobotWithTimeout()) {
   } else {
     handleControlError();
-    request.requestNumber = response.requestNumber; // so if we come back we won't be off by 1
+    request.requestNumber =
+        response.requestNumber; // so if we come back we won't be off by 1
     _robotMutex.unlock();
     return;
   }
@@ -262,24 +280,25 @@ void Simulation::sendControlParameter(const std::string& name,
 }
 
 /*!
- * Report a control error.  This doesn't throw and exception and will return so you can clean up
+ * Report a control error.  This doesn't throw and exception and will return so
+ * you can clean up
  */
 void Simulation::handleControlError() {
   _wantStop = true;
   _running = false;
   _connected = false;
   _uiUpdate();
-  if(!_sharedMemory().robotToSim.errorMessage[0]) {
-    printf(
-      "[ERROR] Control code timed-out!\n");
-    _errorCallback("Control code has stopped responding without giving an error message.\nIt has likely crashed - "
+  if (!_sharedMemory().robotToSim.errorMessage[0]) {
+    printf("[ERROR] Control code timed-out!\n");
+    _errorCallback("Control code has stopped responding without giving an "
+                   "error message.\nIt has likely crashed - "
                    "check the output of the control code for more information");
 
   } else {
     printf("[ERROR] Control code has an error!\n");
-    _errorCallback("Control code has an error:\n" + std::string(_sharedMemory().robotToSim.errorMessage));
+    _errorCallback("Control code has an error:\n" +
+                   std::string(_sharedMemory().robotToSim.errorMessage));
   }
-
 }
 
 /*!
@@ -310,12 +329,12 @@ void Simulation::firstRun() {
 
   // send all control parameters
   printf("[Simulation] Send robot control parameters to robot...\n");
-  for (auto& kv : _robotParams.collection._map) {
+  for (auto &kv : _robotParams.collection._map) {
     sendControlParameter(kv.first, kv.second->get(kv.second->_kind),
                          kv.second->_kind, false);
   }
 
-  for (auto& kv : _userParams.collection._map) {
+  for (auto &kv : _userParams.collection._map) {
     sendControlParameter(kv.first, kv.second->get(kv.second->_kind),
                          kv.second->_kind, true);
   }
@@ -377,6 +396,37 @@ void Simulation::step(double dt, double dtLowLevelControl,
   _simulator->setHoming(homing);
 
   _simulator->step(dt, _tau, _simParams.floor_kp, _simParams.floor_kd);
+  if (_currentSimTime > 20.0) {
+    myfile << _currentSimTime;
+    auto &state = _simulator->getState();
+    auto &dstate = _simulator->getDState();
+    Vec3<double> rpy = ori::quatToRPY(state.bodyOrientation);
+    RotMat<double> Rbody =
+        ori::quaternionToRotationMatrix(state.bodyOrientation);
+    Vec3<double> omega = Rbody.transpose() * state.bodyVelocity.head<3>();
+    Vec3<double> v = Rbody.transpose() * state.bodyVelocity.tail<3>();
+    for (size_t i = 0; i < 4; i++) {
+      myfile << "," << state.bodyOrientation[i];
+    }
+    for (size_t i = 0; i < 3; i++) {
+      myfile << "," << state.bodyVelocity[i + 3];
+      myfile << "," << rpy[i];
+      myfile << "," << state.bodyVelocity[i];
+      myfile << "," << omega[i];
+      myfile << "," << state.bodyPosition[i];
+      myfile << "," << v[i];
+    }
+
+    for (size_t leg = 0; leg < 4; leg++) {
+      for (size_t joint = 0; joint < 3; joint++) {
+        myfile << "," << state.q[leg * 3 + joint] << ","
+               << state.qd[leg * 3 + joint] << ","
+               << dstate.qdd[leg * 3 + joint] << "," << _tau[leg * 3 + joint];
+      }
+    }
+    // std::cout<<state.q[2]<<std::endl;
+    myfile << "\n";
+  }
 }
 
 void Simulation::lowLevelControl() {
@@ -393,7 +443,7 @@ void Simulation::lowLevelControl() {
     }
 
     // run spine board control:
-    for (auto& spineBoard : _spineBoards) {
+    for (auto &spineBoard : _spineBoards) {
       spineBoard.run();
     }
 
@@ -409,15 +459,13 @@ void Simulation::lowLevelControl() {
     }
 
     // run control
-    for (auto& tiBoard : _tiBoards) {
+    for (auto &tiBoard : _tiBoards) {
       tiBoard.run_ti_board_iteration();
     }
   } else {
     assert(false);
   }
 }
-
-
 
 void Simulation::highLevelControl() {
   // send joystick data to robot:
@@ -431,9 +479,8 @@ void Simulation::highLevelControl() {
                                     _sharedMemory().simToRobot.cheaterState);
 
   _imuSimulator->updateVectornav(_simulator->getState(),
-                                   _simulator->getDState(),
-                                   &_sharedMemory().simToRobot.vectorNav);
-
+                                 _simulator->getDState(),
+                                 &_sharedMemory().simToRobot.vectorNav);
 
   // send leg data to robot
   if (_robot == RobotType::MINI_CHEETAH) {
@@ -460,7 +507,8 @@ void Simulation::highLevelControl() {
   }
 
   // first make sure we haven't killed the robot code
-  if (_wantStop) return;
+  if (_wantStop)
+    return;
 
   // next try waiting at most 1 second:
   if (_sharedMemory().waitForRobotWithTimeout()) {
@@ -492,11 +540,11 @@ void Simulation::highLevelControl() {
 void Simulation::buildLcmMessage() {
   _simLCM.time = _currentSimTime;
   // std::cout<<_currentSimTime<<",";
-  myfile<<_currentSimTime;
+
   _simLCM.timesteps = _highLevelIterations;
-  myfile<<","<<_highLevelIterations;
-  auto& state = _simulator->getState();
-  auto& dstate = _simulator->getDState();
+  // myfile<<","<<_highLevelIterations;
+  auto &state = _simulator->getState();
+  auto &dstate = _simulator->getDState();
 
   Vec3<double> rpy = ori::quatToRPY(state.bodyOrientation);
   RotMat<double> Rbody = ori::quaternionToRotationMatrix(state.bodyOrientation);
@@ -505,25 +553,25 @@ void Simulation::buildLcmMessage() {
 
   for (size_t i = 0; i < 4; i++) {
     _simLCM.quat[i] = state.bodyOrientation[i];
-    myfile<<","<<state.bodyOrientation[i];
+    // myfile<<","<<state.bodyOrientation[i];
   }
 
   for (size_t i = 0; i < 3; i++) {
-    _simLCM.vb[i] = state.bodyVelocity[i + 3];  // linear velocity in body frame
-    myfile<<","<<_simLCM.vb[i];
+    _simLCM.vb[i] = state.bodyVelocity[i + 3]; // linear velocity in body frame
+    // myfile << "," << _simLCM.vb[i];
     _simLCM.rpy[i] = rpy[i];
-    myfile<<","<<_simLCM.rpy[i];
+    // myfile << "," << _simLCM.rpy[i];
     for (size_t j = 0; j < 3; j++) {
       _simLCM.R[i][j] = Rbody(i, j);
     }
     _simLCM.omegab[i] = state.bodyVelocity[i];
-    myfile<<","<<_simLCM.omegab[i];
+    // myfile << "," << _simLCM.omegab[i];
     _simLCM.omega[i] = omega[i];
-    myfile<<","<<_simLCM.omega[i];
+    // myfile << "," << _simLCM.omega[i];
     _simLCM.p[i] = state.bodyPosition[i];
-    myfile<<","<<_simLCM.p[i];
+    // myfile << "," << _simLCM.p[i];
     _simLCM.v[i] = v[i];
-    myfile<<","<<_simLCM.v[i];
+    // myfile << "," << _simLCM.v[i];
     _simLCM.vbd[i] = dstate.dBodyVelocity[i + 3];
   }
 
@@ -536,11 +584,14 @@ void Simulation::buildLcmMessage() {
       size_t gcID = _simulator->getModel()._footIndicesGC.at(leg);
       _simLCM.p_foot[leg][joint] = _simulator->getModel()._pGC.at(gcID)[joint];
       _simLCM.f_foot[leg][joint] = _simulator->getContactForce(gcID)[joint];
-      myfile<<","<<state.q[leg * 3 + joint]<<","<<state.qd[leg * 3 + joint]<<","<<dstate.qdd[leg * 3 + joint]<<","<<_tau[leg * 3 + joint];
+      // myfile << "," << state.q[leg * 3 + joint] << ","
+      //        << state.qd[leg * 3 + joint] << "," << dstate.qdd[leg * 3 +
+      //        joint]
+      //        << "," << _tau[leg * 3 + joint];
     }
   }
   // std::cout<<state.q[2]<<std::endl;
-  myfile<<"\n";
+  // myfile << "\n";
 }
 
 /*!
@@ -578,8 +629,8 @@ void Simulation::addCollisionPlane(double mu, double resti, double angle,
  */
 void Simulation::addCollisionBox(double mu, double resti, double depth,
                                  double width, double height,
-                                 const Vec3<double>& pos,
-                                 const Mat3<double>& ori, bool addToWindow,
+                                 const Vec3<double> &pos,
+                                 const Mat3<double> &ori, bool addToWindow,
                                  bool transparent) {
   _simulator->addCollisionBox(mu, resti, depth, width, height, pos, ori);
   if (addToWindow && _window) {
@@ -590,8 +641,8 @@ void Simulation::addCollisionBox(double mu, double resti, double depth,
 }
 
 void Simulation::addCollisionMesh(double mu, double resti, double grid_size,
-                                  const Vec3<double>& left_corner_loc,
-                                  const DMat<double>& height_map,
+                                  const Vec3<double> &left_corner_loc,
+                                  const DMat<double> &height_map,
                                   bool addToWindow, bool transparent) {
   _simulator->addCollisionMesh(mu, resti, grid_size, left_corner_loc,
                                height_map);
@@ -609,12 +660,14 @@ void Simulation::addCollisionMesh(double mu, double resti, double grid_size,
  * desired speed
  * @param dt
  */
-void Simulation::runAtSpeed(std::function<void(std::string)> errorCallback, bool graphics) {
+void Simulation::runAtSpeed(std::function<void(std::string)> errorCallback,
+                            bool graphics) {
   _errorCallback = errorCallback;
-  firstRun();  // load the control parameters
+  firstRun(); // load the control parameters
 
   // if we requested to stop, stop.
-  if (_wantStop) return;
+  if (_wantStop)
+    return;
   assert(!_running);
   _running = true;
   Timer frameTimer;
@@ -635,13 +688,14 @@ void Simulation::runAtSpeed(std::function<void(std::string)> errorCallback, bool
     double dt = _simParams.dynamics_dt;
     double dtLowLevelControl = _simParams.low_level_dt;
     double dtHighLevelControl = _simParams.high_level_dt;
-    _desiredSimSpeed = (_window && _window->wantTurbo()) ? 100.f : _simParams.simulation_speed;
-    if(_window && _window->wantSloMo()) {
+    _desiredSimSpeed =
+        (_window && _window->wantTurbo()) ? 100.f : _simParams.simulation_speed;
+    if (_window && _window->wantSloMo()) {
       _desiredSimSpeed /= 10.;
     }
     u64 nStepsPerFrame = (u64)(((1. / 60.) / dt) * _desiredSimSpeed);
     if (!_window->IsPaused() && steps < desiredSteps) {
-      _simParams.lockMutex();   
+      _simParams.lockMutex();
       step(dt, dtLowLevelControl, dtHighLevelControl);
       _simParams.unlockMutex();
       steps++;
@@ -672,7 +726,7 @@ void Simulation::runAtSpeed(std::function<void(std::string)> errorCallback, bool
   }
 }
 
-void Simulation::loadTerrainFile(const std::string& terrainFileName,
+void Simulation::loadTerrainFile(const std::string &terrainFileName,
                                  bool addGraphics) {
   printf("load terrain %s\n", terrainFileName.c_str());
   ParamHandler paramHandler(terrainFileName);
@@ -684,33 +738,34 @@ void Simulation::loadTerrainFile(const std::string& terrainFileName,
 
   std::vector<std::string> keys = paramHandler.getKeys();
 
-  for (auto& key : keys) {
-    auto load = [&](double& val, const std::string& name) {
+  for (auto &key : keys) {
+    auto load = [&](double &val, const std::string &name) {
       if (!paramHandler.getValue<double>(key, name, val))
         throw std::runtime_error("terrain read bad: " + key + " " + name);
     };
 
-    auto loadVec = [&](double& val, const std::string& name, size_t idx) {
+    auto loadVec = [&](double &val, const std::string &name, size_t idx) {
       std::vector<double> v;
       if (!paramHandler.getVector<double>(key, name, v))
         throw std::runtime_error("terrain read bad: " + key + " " + name);
       val = v.at(idx);
     };
 
-    auto loadArray = [&](double* val, const std::string& name, size_t idx) {
+    auto loadArray = [&](double *val, const std::string &name, size_t idx) {
       std::vector<double> v;
       if (!paramHandler.getVector<double>(key, name, v))
         throw std::runtime_error("terrain read bad: " + key + " " + name);
       assert(v.size() == idx);
-      for (size_t i = 0; i < idx; i++) val[i] = v[i];
+      for (size_t i = 0; i < idx; i++)
+        val[i] = v[i];
     };
 
     printf("terrain element %s\n", key.c_str());
     std::string typeName;
     paramHandler.getString(key, "type", typeName);
     if (typeName == "infinite-plane") {
-      double mu, resti, angle,height, gfxX, gfxY, checkerX, checkerY;
-      
+      double mu, resti, angle, height, gfxX, gfxY, checkerX, checkerY;
+
       load(mu, "mu");
       load(resti, "restitution");
       load(angle, "angle");
@@ -735,8 +790,8 @@ void Simulation::loadTerrainFile(const std::string& terrainFileName,
       load(transparent, "transparent");
 
       Mat3<double> R_box = ori::rpyToRotMat(Vec3<double>(ori));
-      R_box.transposeInPlace();  // collisionBox uses "rotation" matrix instead
-                                 // of "transformation"
+      R_box.transposeInPlace(); // collisionBox uses "rotation" matrix instead
+                                // of "transformation"
       addCollisionBox(mu, resti, depth, width, height, Vec3<double>(pos), R_box,
                       addGraphics, transparent != 0.);
     } else if (typeName == "stairs") {
@@ -755,7 +810,7 @@ void Simulation::loadTerrainFile(const std::string& terrainFileName,
 
       Mat3<double> R = ori::rpyToRotMat(Vec3<double>(ori));
       Vec3<double> pOff(pos);
-      R.transposeInPlace();  // "graphics" rotation matrix
+      R.transposeInPlace(); // "graphics" rotation matrix
 
       size_t steps = (size_t)stepsDouble;
 
@@ -774,7 +829,7 @@ void Simulation::loadTerrainFile(const std::string& terrainFileName,
     } else if (typeName == "mesh") {
       double mu, resti, transparent, grid;
       Vec3<double> left_corner;
-      std::vector<std::vector<double> > height_map_2d;
+      std::vector<std::vector<double>> height_map_2d;
       load(mu, "mu");
       load(resti, "restitution");
       load(transparent, "transparent");
@@ -850,12 +905,10 @@ void Simulation::updateGraphics() {
     _robotControllerState.q[i] =
         _sharedMemory().robotToSim.mainCheetahVisualization.q[i];
   _robotDataSimulator->setState(_robotControllerState);
-  _robotDataSimulator->forwardKinematics();  // calc all body positions
+  _robotDataSimulator->forwardKinematics(); // calc all body positions
   _window->_drawList.updateRobotFromModel(*_simulator, _simRobotID, true);
   _window->_drawList.updateRobotFromModel(*_robotDataSimulator,
                                           _controllerRobotID, false);
   _window->_drawList.updateAdditionalInfo(*_simulator);
   _window->update();
 }
-
-
