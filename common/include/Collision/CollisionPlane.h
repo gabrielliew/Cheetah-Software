@@ -12,7 +12,7 @@
 
 #include "Collision/Collision.h"
 #include "cppTypes.h"
-
+#include <cmath>
 /*!
  * Class to represent infinite collision planes (like a flat ground).
  */
@@ -27,8 +27,8 @@ class CollisionPlane : public Collision<T> {
    * @param restitution  : rebounding ratio (v+/v-)
    * @param height  : height of this plane
    */
-  CollisionPlane(const T& mu, const T& restitution, const T& height)
-      : Collision<T>(mu, restitution), _height(height) {}
+  CollisionPlane(const T& mu, const T& restitution, const T& angle)
+      : Collision<T>(mu, restitution), _angle(angle) {}
 
   virtual ~CollisionPlane() {}
 
@@ -36,7 +36,7 @@ class CollisionPlane : public Collision<T> {
                                 Mat3<T>& cp_frame);
 
  private:
-  T _height;
+  T _angle;
 };
 
 #endif  // COLLISION_PLANE_H

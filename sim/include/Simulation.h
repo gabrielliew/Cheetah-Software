@@ -57,7 +57,7 @@ class Simulation {
 
   void step(double dt, double dtLowLevelControl, double dtHighLevelControl);
 
-  void addCollisionPlane(double mu, double resti, double height,
+  void addCollisionPlane(double mu, double resti, double angle,
                          double sizeX = 20, double sizeY = 20,
                          double checkerX = 40, double checkerY = 40,
                          bool addToWindow = true);

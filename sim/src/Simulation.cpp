@@ -550,17 +550,17 @@ void Simulation::buildLcmMessage() {
  * @param height      : height of plane
  * @param addToWindow : if true, also adds graphics for the plane
  */
-void Simulation::addCollisionPlane(double mu, double resti, double height,
+void Simulation::addCollisionPlane(double mu, double resti, double angle,
                                    double sizeX, double sizeY, double checkerX,
                                    double checkerY, bool addToWindow) {
-  _simulator->addCollisionPlane(mu, resti, height);
+  _simulator->addCollisionPlane(mu, resti, angle);
   if (addToWindow && _window) {
     _window->lockGfxMutex();
     Checkerboard checker(sizeX, sizeY, checkerX, checkerY);
 
     size_t graphicsID = _window->_drawList.addCheckerboard(checker, true);
     _window->_drawList.buildDrawList();
-    _window->_drawList.updateCheckerboard(height, graphicsID);
+    _window->_drawList.updateCheckerboard(0.0, graphicsID);
     _window->unlockGfxMutex();
   }
 }
@@ -709,16 +709,17 @@ void Simulation::loadTerrainFile(const std::string& terrainFileName,
     std::string typeName;
     paramHandler.getString(key, "type", typeName);
     if (typeName == "infinite-plane") {
-      double mu, resti, height, gfxX, gfxY, checkerX, checkerY;
+      double mu, resti, angle,height, gfxX, gfxY, checkerX, checkerY;
+      
       load(mu, "mu");
       load(resti, "restitution");
-      load(height, "height");
+      load(angle, "angle");
       loadVec(gfxX, "graphicsSize", 0);
       loadVec(gfxY, "graphicsSize", 1);
       loadVec(checkerX, "checkers", 0);
       loadVec(checkerY, "checkers", 1);
-      // loadArray(ori, "orientation", 3);
-      addCollisionPlane(mu, resti, height, gfxX, gfxY, checkerX, checkerY,
+      loadVec(checkerY, "checkers", 1);
+      addCollisionPlane(mu, resti, angle, gfxX, gfxY, checkerX, checkerY,
                         addGraphics);
     } else if (typeName == "box") {
       double mu, resti, depth, width, height, transparent;

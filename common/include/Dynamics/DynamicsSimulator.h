@@ -100,8 +100,8 @@ class DynamicsSimulator {
    * @param rest : restitution coefficient
    * @param height : height of plane
    */
-  void addCollisionPlane(T mu, T rest, T height) {
-    _contact_constr->AddCollision(new CollisionPlane<T>(mu, rest, height));
+  void addCollisionPlane(T mu, T rest, T angle) {
+    _contact_constr->AddCollision(new CollisionPlane<T>(mu, rest, angle));
   }
 
   /*!

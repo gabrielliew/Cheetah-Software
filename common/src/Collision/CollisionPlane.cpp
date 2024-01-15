@@ -16,8 +16,9 @@
 template <typename T>
 bool CollisionPlane<T>::ContactDetection(const Vec3<T>& cp_pos, T& penetration,
                                          Mat3<T>& cp_frame) {
-  if (cp_pos[2] < _height) {
-    penetration = cp_pos[2] - _height;
+  T height_point=std::tan(_angle*3.14159/180)*cp_pos[0];
+  if (cp_pos[2] < height_point) {
+    penetration = cp_pos[2] - height_point;
     cp_frame.setIdentity();
     return true;
   } else {
