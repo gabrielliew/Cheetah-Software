@@ -30,8 +30,8 @@ Simulation::Simulation(RobotType robot, Graphics3D *window,
   std::string s(30, '\0');
     std::strftime(&s[0], s.size(), "%Y-%m-%d-%H:%M:%S", std::localtime(&now));
   myfile.open("simulator" + s + ".csv");
-  myfile << "time,iterations,bodyOrientation0,bodyOrientation0,"
-            "bodyOrientation0,bodyOrientation0,vb0,rpy0,omegab0,omega0,p0,v0,"
+  myfile << "time,iterations,bodyOrientation0,bodyOrientation1,"
+            "bodyOrientation2,bodyOrientation3,vb0,rpy0,omegab0,omega0,p0,v0,"
             "vb1,rpy1,omegab1,omega1,p1,v1,vb2,rpy2,omegab2,omega2,p2,v2,q00,"
             "qd00,qdd00,t00,q01,qd01,qdd01,t01,q02,qd02,qdd02,t02,q10,qd10,"
             "qdd10,t10,q11,qd11,qdd11,t11,q12,qd12,qdd12,t12,q20,qd20,qdd20,"
@@ -398,6 +398,8 @@ void Simulation::step(double dt, double dtLowLevelControl,
   _simulator->step(dt, _tau, _simParams.floor_kp, _simParams.floor_kd);
   if (_currentSimTime > 20.0) {
     myfile << _currentSimTime;
+    myfile <<",";
+    myfile <<_highLevelIterations;
     auto &state = _simulator->getState();
     auto &dstate = _simulator->getDState();
     Vec3<double> rpy = ori::quatToRPY(state.bodyOrientation);
