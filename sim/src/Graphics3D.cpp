@@ -882,30 +882,30 @@ void Graphics3D::_Additional_Drawing(int pass) {
   glPushAttrib(GL_LIGHTING_BIT);
   glDisable(GL_LIGHTING);
 
-  _DrawContactForce();
-  _DrawContactPoint();
+  // _DrawContactForce();
+  // _DrawContactPoint();
 
   configOpenGLPass(pass);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-  for (size_t i = 0; i < _drawList._visualizationData->num_arrows; i++) {
-    _drawArrow(_drawList._visualizationData->arrows[i]);
-  }
+  // for (size_t i = 0; i < _drawList._visualizationData->num_arrows; i++) {
+  //   _drawArrow(_drawList._visualizationData->arrows[i]);
+  // }
 
-  for (size_t i = 0; i < _drawList._visualizationData->num_cones; i++) {
-    _drawCone(_drawList._visualizationData->cones[i]);
-  }
+  // for (size_t i = 0; i < _drawList._visualizationData->num_cones; i++) {
+  //   _drawCone(_drawList._visualizationData->cones[i]);
+  // }
 
-  for (size_t i = 0; i < _drawList._visualizationData->num_blocks; i++) {
-    _drawBlock(_drawList._visualizationData->blocks[i]);
-  }
+  // for (size_t i = 0; i < _drawList._visualizationData->num_blocks; i++) {
+  //   _drawBlock(_drawList._visualizationData->blocks[i]);
+  // }
 
-  for (size_t i = 0; i < _drawList._visualizationData->num_spheres; i++) {
-    _drawSphere(_drawList._visualizationData->spheres[i]);
-  }
+  // for (size_t i = 0; i < _drawList._visualizationData->num_spheres; i++) {
+  //   _drawSphere(_drawList._visualizationData->spheres[i]);
+  // }
 
-  if(_vel_cmd_update){ _drawVelArrow(); }
+  if(_vel_cmd_update){ /*_drawVelArrow();*/ }
 
   // Pointcloud Drawing
   if(_pointcloud_data_update){
@@ -915,14 +915,14 @@ void Graphics3D::_Additional_Drawing(int pass) {
       sphere.position = _points[i*num_skip];
       sphere.color = {1.0, 0.2, 0.2, 1.0};
       sphere.radius = 0.007;
-      _drawSphere(sphere);
+      // _drawSphere(sphere);
     }
   }
 
 
   glDisable(GL_BLEND);
   for (size_t i(0); i< _drawList._visualizationData->num_meshes; ++i){
-    _drawMesh(_drawList._visualizationData->meshes[i]);
+    // _drawMesh(_drawList._visualizationData->meshes[i]);
   }
   // Heightmap Drawing
   if(_obstacle_update){ _drawObstacleField(); }
@@ -966,7 +966,7 @@ void Graphics3D::_DrawContactForce() {
       floatPos(j) = _drawList.getGCPos(i)[j];
       floatForce(j) = scale * _drawList.getGCForce(i)[j];
     }
-    _drawArrow(floatPos, floatForce, .005, .015, .04);
+    // _drawArrow(floatPos, floatForce, .005, .015, .04);
   }
   glPopAttrib();
   glDisable(GL_BLEND);
