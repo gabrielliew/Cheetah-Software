@@ -15,7 +15,7 @@ void DrawList::loadFiles() {
       "mini_body.obj",       "mini_abad.obj",
       "mini_upper_link.obj", "mini_lower_link.obj",
       "sphere.obj",          "cube.obj"};
-  for (const auto& name : names) {
+  for (const auto &name : names) {
     std::string filename = _baseFileName + name;
     _vertexData.emplace_back();
     _normalData.emplace_back();
@@ -132,8 +132,8 @@ size_t DrawList::addCheetah3(Vec4<float> color, bool useOld, bool canHide) {
  * TODO check all this once the mini cheetah dynamics model exists again
  */
 size_t DrawList::addMiniCheetah(Vec4<float> color, bool useOld, bool canHide) {
-  
-  size_t i0 = _miniCheetahLoadIndex;  // todo don't hard code this
+
+  size_t i0 = _miniCheetahLoadIndex; // todo don't hard code this
   size_t j0 = _nTotal;
 
   // set model offsets:
@@ -145,22 +145,22 @@ size_t DrawList::addMiniCheetah(Vec4<float> color, bool useOld, bool canHide) {
   bodyOffset.setToIdentity();
 
   // abads (todo, check these)
-  abadOffsets[0].setToIdentity();  // n
+  abadOffsets[0].setToIdentity(); // n
   abadOffsets[0].rotate(-90, 0, 0, 1);
   abadOffsets[0].translate(0, -.0565f, 0);
   abadOffsets[0].rotate(180, 0, 1, 0);
 
-  abadOffsets[1].setToIdentity();  // p
+  abadOffsets[1].setToIdentity(); // p
   abadOffsets[1].rotate(-90, 0, 0, 1);
   abadOffsets[1].translate(0, -.0565f, 0);
   abadOffsets[1].rotate(0, 0, 1, 0);
 
-  abadOffsets[2].setToIdentity();  // n
+  abadOffsets[2].setToIdentity(); // n
   abadOffsets[2].rotate(90, 0, 0, 1);
   abadOffsets[2].translate(0, -.0565f, 0);
   abadOffsets[2].rotate(0, 0, 1, 0);
 
-  abadOffsets[3].setToIdentity();  // p
+  abadOffsets[3].setToIdentity(); // p
   abadOffsets[3].rotate(90, 0, 0, 1);
   abadOffsets[3].translate(0, -.0565f, 0);
   abadOffsets[3].rotate(180, 0, 1, 0);
@@ -173,7 +173,7 @@ size_t DrawList::addMiniCheetah(Vec4<float> color, bool useOld, bool canHide) {
   lower.setToIdentity();
   lower.rotate(180, 0, 1, 0);
 
-  SolidColor bodyColor, abadColor, link1Color, link2Color;
+    SolidColor bodyColor, abadColor, link1Color, link2Color;
   bodyColor.rgba = useOld ? Vec4<float>(.2, .2, .4, .3) : color;
   bodyColor.useSolidColor = true;
 
@@ -186,6 +186,7 @@ size_t DrawList::addMiniCheetah(Vec4<float> color, bool useOld, bool canHide) {
   link2Color.rgba = useOld ? Vec4<float>(.2, .2, .4, .3) : color;
   link2Color.useSolidColor = true;
 
+
   _canBeHidden.push_back(canHide);
 
   // add objects
@@ -196,24 +197,45 @@ size_t DrawList::addMiniCheetah(Vec4<float> color, bool useOld, bool canHide) {
   _nTotal++;
 
   for (int i = 0; i < 4; i++) {
-    _objectMap.push_back(i0 + 1);
-    _canBeHidden.push_back(canHide);
-    _modelOffsets.push_back(abadOffsets[i]);
-    _kinematicXform.push_back(eye);
-    _instanceColor.push_back(abadColor);
+    // if (i == 0) {
+    //   _objectMap.push_back(i0 + 1);
+    //   _canBeHidden.push_back(canHide);
+    //   _modelOffsets.push_back(abadOffsets[i]);
+    //   _kinematicXform.push_back(eye);
+    //   _instanceColor.push_back(abadaColor);
 
-    _objectMap.push_back(i0 + 2);
-    _canBeHidden.push_back(canHide);
-    _modelOffsets.push_back(upper);
-    _kinematicXform.push_back(eye);
-    _instanceColor.push_back(link1Color);
+    //   _objectMap.push_back(i0 + 2);
+    //   _canBeHidden.push_back(canHide);
+    //   _modelOffsets.push_back(upper);
+    //   _kinematicXform.push_back(eye);
+    //   _instanceColor.push_back(link1aColor);
 
-    _objectMap.push_back(i0 + 3);
-    _canBeHidden.push_back(canHide);
-    _modelOffsets.push_back(lower);
-    _kinematicXform.push_back(eye);
-    _instanceColor.push_back(link2Color);
-    _nTotal += 3;
+    //   _objectMap.push_back(i0 + 3);
+    //   _canBeHidden.push_back(canHide);
+    //   _modelOffsets.push_back(lower);
+    //   _kinematicXform.push_back(eye);
+    //   _instanceColor.push_back(link2aColor);
+    //   _nTotal += 3;
+    // } else {
+      _objectMap.push_back(i0 + 1);
+      _canBeHidden.push_back(canHide);
+      _modelOffsets.push_back(abadOffsets[i]);
+      _kinematicXform.push_back(eye);
+      _instanceColor.push_back(abadColor);
+
+      _objectMap.push_back(i0 + 2);
+      _canBeHidden.push_back(canHide);
+      _modelOffsets.push_back(upper);
+      _kinematicXform.push_back(eye);
+      _instanceColor.push_back(link1Color);
+
+      _objectMap.push_back(i0 + 3);
+      _canBeHidden.push_back(canHide);
+      _modelOffsets.push_back(lower);
+      _kinematicXform.push_back(eye);
+      _instanceColor.push_back(link2Color);
+      _nTotal += 3;
+    // }
   }
 
   // printf("add mini cheetah (%d) id %ld\n", (int)canHide, j0);
@@ -228,7 +250,7 @@ size_t DrawList::addMiniCheetah(Vec4<float> color, bool useOld, bool canHide) {
  * Uses an identity transformation. You must call
  * updateCheckerboardFromCollisionPlane to set the actual transform.
  */
-size_t DrawList::addCheckerboard(Checkerboard& checkerBoard, bool scroll) {
+size_t DrawList::addCheckerboard(Checkerboard &checkerBoard, bool scroll) {
   size_t j0 = _nTotal;
   size_t i0 = _nUnique;
 
@@ -255,18 +277,20 @@ size_t DrawList::addCheckerboard(Checkerboard& checkerBoard, bool scroll) {
   // add the instance
   _objectMap.push_back(i0);
   _canBeHidden.push_back(false);
-  if(scroll) {
-    _scrollIDs.push_back({j0, checkerBoard.getSize()[0], checkerBoard.getSize()[1]});
+  if (scroll) {
+    _scrollIDs.push_back(
+        {j0, checkerBoard.getSize()[0], checkerBoard.getSize()[1]});
   }
   return j0;
 }
 
 void DrawList::doScrolling(Vec3<float> cameraPos) {
-  for(auto& obj : _scrollIDs) {
-    float scrollDiv[2] = {obj.xs/4, obj.ys/4};
-    auto& groundXform = getModelKinematicTransform(obj.id);
+  for (auto &obj : _scrollIDs) {
+    float scrollDiv[2] = {obj.xs / 4, obj.ys / 4};
+    auto &groundXform = getModelKinematicTransform(obj.id);
     groundXform.setToIdentity();
-    groundXform.translate( -scrollDiv[0] * (int)(cameraPos[0] / scrollDiv[0]),  -scrollDiv[1] * (int)(cameraPos[1] / scrollDiv[1]));
+    groundXform.translate(-scrollDiv[0] * (int)(cameraPos[0] / scrollDiv[0]),
+                          -scrollDiv[1] * (int)(cameraPos[1] / scrollDiv[1]));
   }
 }
 
@@ -316,7 +340,7 @@ void DrawList::buildDrawList() {
 }
 
 void DrawList::addBox(double depth, double width, double height,
-                      const Vec3<double>& pos, const Mat3<double>& ori,
+                      const Vec3<double> &pos, const Mat3<double> &ori,
                       bool transparent) {
   if (transparent) {
     BoxInfo tmp;
@@ -334,7 +358,8 @@ void DrawList::addBox(double depth, double width, double height,
         tmp.frame[4 * i + j] = ori(j, i);
       }
     }
-    for (size_t i(0); i < 3; ++i) tmp.frame[12 + i] = pos[i];
+    for (size_t i(0); i < 3; ++i)
+      tmp.frame[12 + i] = pos[i];
 
     _box_list.push_back(tmp);
   } else {
@@ -366,8 +391,8 @@ void DrawList::addBox(double depth, double width, double height,
   }
 }
 
-void DrawList::addMesh(double grid_size, const Vec3<double>& left_corner,
-                       const DMat<double>& height_map, bool transparent) {
+void DrawList::addMesh(double grid_size, const Vec3<double> &left_corner,
+                       const DMat<double> &height_map, bool transparent) {
   (void)transparent;
 
   _grid_size = grid_size;
