@@ -1,4 +1,5 @@
 build/
+datas/
 mc-build/
 cmake-build-debug/
 .idea/
