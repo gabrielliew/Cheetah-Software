@@ -67,12 +67,16 @@ void DesiredStateCommand<T>::convertToStateCommands() {
 
   joystickLeft[0] *= -1.f;
   joystickRight[0] *= -1.f;
-  joystickLeft[1] = 1.f; // for auto move
-  leftAnalogStick = leftAnalogStick * (T(1) - filter) + joystickLeft * filter;
-  rightAnalogStick = rightAnalogStick * (T(1) - filter) + joystickRight * filter;
+  joystickLeft[1] =1.0f; // for auto move
+  // joystickLeft[1] = 2.f; // for auto move
+  // joystickLeft[1] = 3.f; // for auto move
+  leftAnalogStick = leftAnalogStick * (1.000f - filter) + joystickLeft * filter;
+  rightAnalogStick = rightAnalogStick * (1.000f - filter) + joystickRight * filter;
 
   // Desired states from the controller
-  data.stateDes(6) = deadband(leftAnalogStick[1], minVelX, maxVelX);  // forward linear velocity
+  data.stateDes(6) = deadband(leftAnalogStick[1], minVelX, maxVelX);  
+  // std::cout <<data.stateDes(6)<<std::endl;
+  // forward linear velocity
   data.stateDes(7) = deadband(leftAnalogStick[0], minVelY, maxVelY);  // lateral linear velocity
   data.stateDes(8) = 0.0;  // vertical linear velocity
   data.stateDes(0) = dt * data.stateDes(6);  // X position

@@ -77,8 +77,8 @@ public:
   T minRoll = -0.4;
   T maxPitch = 0.4;
   T minPitch = -0.4;
-  T maxVelX = 3.0;
-  T minVelX = -3.0;
+  T maxVelX = 4.0;
+  T minVelX = -4.0;
   //T maxVelX = 5.0;
   //T minVelX = -5.0;
   T maxVelY = 2.0;
@@ -116,7 +116,7 @@ private:
   // Value cutoff for the analog stick deadband
   T deadbandRegion = 0.075;
   //const T filter = 0.01;
-  const T filter = 0.1;
+  float filter = 0.0005;
 
   // Choose how often to print info, every N iterations
   int printNum = 5;  // N*(0.001s) in simulation time

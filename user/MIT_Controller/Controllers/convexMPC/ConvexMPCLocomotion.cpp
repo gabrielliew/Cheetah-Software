@@ -146,7 +146,7 @@ void ConvexMPCLocomotion::run(ControlFSMData<float>& data) {
   else if(gaitNumber == 7)
     gait = &random2;
   else if(gaitNumber == 8)
-    gait = &pacing;
+    gait = &galloping;
   current_gait = gaitNumber;
 
   gait->setIterations(iterationsBetweenMPC, iterationCounter);
